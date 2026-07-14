@@ -1,0 +1,72 @@
+name: Auto Grader
+on:
+  issues:
+    types: [opened]
+
+concurrency:
+  group: grading-queue
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Public Repo
+        uses: actions/checkout@v4
+
+      - name: Parse Issue for ZIP URL
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            const zipMatch = body.match(/https:\/\/github\.com\/[^\s)]+\.zip/);
+            if(!zipMatch) core.setFailed("No ZIP found!");
+            core.setOutput("zip_url", zipMatch[0]);
+
+      - name: Download & Extract Submission
+        run: |
+          curl -L -o submission.zip "${{ steps.parse.outputs.zip_url }}"
+          mkdir workspace
+          unzip submission.zip -d workspace/
+
+      - name: Checkout Private Engine
+        uses: actions/checkout@v4
+        with:
+          repository: 'your-github-username/hackathon-tests'
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: 'engine'
+
+      - name: Run Grading Script
+        id: grade
+        run: |
+          # Passes GitHub Username, Question ID, and workspace path
+          OUTPUT=$(python3 engine/evaluate.py "${{ github.actor }}" "Q1" "./workspace")
+          echo "Result: $OUTPUT"
+
+          # Extremely basic parsing for the prototype update
+          if [[ "$OUTPUT" == SCORE_UPDATE* ]]; then
+            IFS=':' read -r PREFIX TEAM SCORE STATUS <<< "$OUTPUT"
+
+            # Update JSON via jq
+            jq ".\"$TEAM\".score = $SCORE | .\"$TEAM\".status = \"$STATUS\"" leaderboard.json > tmp.json && mv tmp.json leaderboard.json
+          fi
+
+      - name: Commit Leaderboard
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update leaderboard"
+          file_pattern: 'leaderboard.json'
+
+      - name: Close Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number, state: 'closed'
+            });
