@@ -6,5 +6,9 @@
   "RivalTeam": {
     "score": 0,
     "status": "Active"
+  },
+  "BetaForce": {
+    "score": 100,
+    "status": "Active"
   }
 }
