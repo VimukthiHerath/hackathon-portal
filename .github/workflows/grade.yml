@@ -37,7 +37,7 @@ jobs:
       - name: Checkout Private Engine
         uses: actions/checkout@v4
         with:
-          repository: 'your-github-username/hackathon-tests'
+          repository: 'VimukthiHerath/hackathon-tests'
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           path: 'engine'
 
