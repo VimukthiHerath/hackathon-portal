@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLIIT Hackathon Live Leaderboard</title>
+    <title>SLIIT Hackathon Live Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -24,18 +24,41 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 py-12">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                Live Leaderboard
-            </h1>
-            <p class="text-slate-400 text-sm mt-2">Real-time evaluation rankings powered securely by automated serverless environments.</p>
+    <main class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <div class="md:col-span-1 space-y-6">
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Active Task</span>
+                <h2 class="text-2xl font-black mt-3 text-slate-200">Q1: Target Sum Matcher</h2>
+                <p class="text-slate-400 text-sm mt-2 leading-relaxed">
+                    Given a line of space-separated numbers and a target integer sum on the next line, determine if any two distinct items combine to match the target. Print <code class="text-amber-300 font-mono">True</code> or <code class="text-amber-300 font-mono">False</code>.
+                </p>
+                
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <a href="Q1_Resources.zip" download class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-900 font-bold py-3 px-4 rounded-xl shadow-lg transition duration-200 group">
+                        <i class="fa-solid fa-cloud-arrow-down group-hover:animate-bounce"></i>
+                        <span>Download Starter Pack</span>
+                    </a>
+                    <p class="text-[11px] text-slate-500 text-center mt-2">Contains template execution scripts and mock environments.</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/20 border border-slate-800/60 rounded-2xl p-6 text-sm text-slate-400">
+                <h3 class="font-bold text-slate-300 mb-2 flex items-center"><i class="fa-solid fa-arrow-up-from-bracket mr-2 text-amber-500"></i>How to Submit:</h3>
+                <ol class="list-decimal list-inside space-y-2 text-xs">
+                    <li>Pack your workspace files into a standard <code class="text-slate-200">.zip</code>.</li>
+                    <li>Head directly to our public Issues portal.</li>
+                    <li>Open a submission ticket, attach your file, and track the evaluation telemetry live.</li>
+                </ol>
+            </div>
         </div>
 
-        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl" id="board-container">
-            <div class="p-8 text-center text-slate-400" id="board">
-                <i class="fa-solid fa-circle-notch animate-spin text-amber-500 text-2xl mb-3"></i>
-                <p>Establishing datalink connection...</p>
+        <div class="md:col-span-2">
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl" id="board-container">
+                <div class="p-12 text-center text-slate-400" id="board">
+                    <i class="fa-solid fa-circle-notch animate-spin text-amber-500 text-2xl mb-3"></i>
+                    <p>Establishing datalink connection...</p>
+                </div>
             </div>
         </div>
     </main>
@@ -49,7 +72,6 @@
                 return res.json();
             })
             .then(data => {
-                // Map object entries to an array and sort descending by score
                 var sortedTeams = [];
                 for (var name in data) {
                     if (data.hasOwnProperty(name)) {
