@@ -1,22 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hackathon Leaderboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background-color: #f9f9f9; }
+        table { width: 50%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #0076FF; color: white; }
+        tr.disqualified { background-color: #ffe6e6; color: #cc0000; }
+    </style>
+</head>
 <body>
-  <h1>Hackathon Leaderboard</h1>
-  <pre id="board">Loading...</pre>
-  <script>
-    https://raw.githubusercontent.com/VimukthiHerath/hackathon-portal/refs/heads/main/leaderboard.json
-      .then(res => res.json())
-      .then(data => {
-        let output = '';
-        for(const [team, info] of Object.entries(data)) {
-          if(info.status.includes('Disqualified')) {
-             output += `<del style="color:red">${team}: ${info.score} pts (${info.status})</del>\n`;
-          } else {
-             output += `${team}: ${info.score} pts\n`;
-          }
-        }
-        document.getElementById('board').innerHTML = output;
-      });
-  </script>
+
+    <h1>🏆 SLIIT Hackathon Live Leaderboard</h1>
+    <div id="board">Loading leaderboard data...</div>
+
+    <script>
+        // Forces the browser to load the absolute freshest data every time
+        var cacheBusterUrl = 'leaderboard.json?v=' + Date.now();
+
+        fetch(cacheBusterUrl)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Could not fetch leaderboard.json');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                var html = '<table>';
+                html += '<thead><tr><th>Team Name</th><th>Score</th><th>Status</th></tr></thead>';
+                html += '<tbody>';
+
+                // Standard loop over the JSON object keys
+                for (var teamName in data) {
+                    if (data.hasOwnProperty(teamName)) {
+                        var teamInfo = data[teamName];
+                        var score = teamInfo.score;
+                        var status = teamInfo.status || 'Active';
+                        
+                        var rowClass = '';
+                        var displayName = teamName;
+
+                        // Check if the team is flagged as Disqualified
+                        if (status.indexOf('Disqualified') !== -1) {
+                            rowClass = ' class="disqualified"';
+                            displayName = '<del>' + teamName + '</del> ⚠️';
+                        }
+
+                        html += '<tr' + rowClass + '>';
+                        html += '<td><b>' + displayName + '</b></td>';
+                        html += '<td>' + score + ' pts</td>';
+                        html += '<td>' + status + '</td>';
+                        html += '</tr>';
+                    }
+                }
+
+                html += '</tbody></table>';
+                document.getElementById('board').innerHTML = html;
+            })
+            .catch(function(error) {
+                document.getElementById('board').innerHTML = '<p style="color:red;"><b>Error:</b> ' + error.message + '</p>';
+                console.error(error);
+            });
+    </script>
+
 </body>
 </html>
