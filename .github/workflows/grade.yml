@@ -44,16 +44,19 @@ jobs:
       - name: Run Grading Script
         id: grade
         run: |
-          # Passes GitHub Username, Question ID, and workspace path
-          OUTPUT=$(python3 engine/evaluate.py "${{ github.actor }}" "Q1" "./workspace")
+          # Explicitly targets the user who opened the issue ticket
+          OUTPUT=$(python3 engine/evaluate.py "${{ github.event.issue.user.login }}" "Q1" "./workspace")
           echo "Result: $OUTPUT"
 
-          # Extremely basic parsing for the prototype update
+          # Basic parsing for the prototype update
           if [[ "$OUTPUT" == SCORE_UPDATE* ]]; then
             IFS=':' read -r PREFIX TEAM SCORE STATUS <<< "$OUTPUT"
 
             # Update JSON via jq
             jq ".\"$TEAM\".score = $SCORE | .\"$TEAM\".status = \"$STATUS\"" leaderboard.json > tmp.json && mv tmp.json leaderboard.json
+          else
+            echo "Error: Grading system returned a fallback/invalid response."
+            exit 1
           fi
 
       - name: Commit Leaderboard
@@ -67,6 +70,8 @@ jobs:
         with:
           script: |
             await github.rest.issues.update({
-              owner: context.repo.owner, repo: context.repo.repo,
-              issue_number: context.issue.number, state: 'closed'
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
             });
