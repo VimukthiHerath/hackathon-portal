@@ -1,4 +1,10 @@
 {
-  "TestTeamAlpha": { "score": 0, "status": "Active" },
-  "RivalTeam": { "score": 0, "status": "Active" }
+  "TestTeamAlpha": {
+    "score": 100,
+    "status": "Active"
+  },
+  "RivalTeam": {
+    "score": 0,
+    "status": "Active"
+  }
 }
