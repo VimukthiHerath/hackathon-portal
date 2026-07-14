@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Hackathon Leaderboard</h1>
+  <pre id="board">Loading...</pre>
+  <script>
+    fetch('leaderboard.json?' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        let output = '';
+        for(const [team, info] of Object.entries(data)) {
+          if(info.status.includes('Disqualified')) {
+             output += `<del style="color:red">${team}: ${info.score} pts (${info.status})</del>\n`;
+          } else {
+             output += `${team}: ${info.score} pts\n`;
+          }
+        }
+        document.getElementById('board').innerHTML = output;
+      });
+  </script>
+</body>
+</html>
