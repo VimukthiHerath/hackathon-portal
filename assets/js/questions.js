@@ -30,7 +30,7 @@
       : '<span class="glyph glyph-unlocked" aria-hidden="true">&#9679;</span>';
     const statusBadge = solved
       ? '<span class="badge badge-solved">Solved by you</span>'
-      : `<span class="badge badge-unlocked">${escapeHtml(q.points)} pts</span>`;
+      : `<span class="badge badge-points">${escapeHtml(q.points)} pts</span>`;
 
     return `
       <div class="q-row">
