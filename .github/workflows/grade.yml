@@ -3,10 +3,6 @@ on:
   issues:
     types: [opened]
 
-concurrency:
-  group: grading-queue
-  cancel-in-progress: false
-
 permissions:
   contents: write
   issues: write
@@ -14,27 +10,71 @@ permissions:
 jobs:
   grade:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Public Repo
         uses: actions/checkout@v4
 
-      - name: Parse Issue for ZIP URL
+      - name: Parse Issue
         id: parse
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.issue.body;
+            const body = context.payload.issue.body || "";
+
+            // Issue Forms render each field as "### <label>\n\n<value>\n\n"
+            const qMatch = body.match(/### Question Selection\s*\n+([^\n]+)/);
+            if (!qMatch) core.setFailed("Could not find a 'Question Selection' field in the issue body.");
+            const selection = qMatch[1].trim();
+
+            // Dropdown options are written as "Q1: Title" so the id is always the leading token.
+            const idMatch = selection.match(/^([A-Za-z0-9]+)\s*:/);
+            if (!idMatch) core.setFailed(`Could not parse a question id out of "${selection}". Expected the option to start with "Q<id>:".`);
+            core.setOutput("question_id", idMatch[1]);
+
             const zipMatch = body.match(/https:\/\/github\.com\/[^\s)]+\.zip/);
-            if(!zipMatch) core.setFailed("No ZIP found!");
-            core.setOutput("zip_url", zipMatch[0]);
+            if (!zipMatch) core.setFailed("No ZIP attachment URL found in the issue body.");
+            core.setOutput("zip_url", zipMatch ? zipMatch[0] : "");
+
+      - name: Look Up Question
+        id: lookup
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const questions = JSON.parse(fs.readFileSync('questions.json', 'utf8'));
+            const qid = "${{ steps.parse.outputs.question_id }}";
+            const q = questions.find(x => x.id === qid);
+            core.setOutput("valid", (q && q.unlocked) ? "true" : "false");
+            core.setOutput("title", q ? q.title : qid);
+
+      - name: Comment - Question Not Available
+        if: steps.lookup.outputs.valid != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "Sorry, **${{ steps.parse.outputs.question_id }}** isn't currently open for submissions. Check the live question list on the portal and try again once it's unlocked."
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });
 
       - name: Download & Extract Submission
+        if: steps.lookup.outputs.valid == 'true'
         run: |
           curl -L -o submission.zip "${{ steps.parse.outputs.zip_url }}"
           mkdir workspace
-          unzip submission.zip -d workspace/
+          unzip -o submission.zip -d workspace/
 
       - name: Checkout Private Engine
+        if: steps.lookup.outputs.valid == 'true'
         uses: actions/checkout@v4
         with:
           repository: 'VimukthiHerath/hackathon-tests'
@@ -42,33 +82,90 @@ jobs:
           path: 'engine'
 
       - name: Run Grading Script
+        if: steps.lookup.outputs.valid == 'true'
         id: grade
         run: |
-          # Explicitly targets the user who opened the issue ticket
-          OUTPUT=$(python3 engine/evaluate.py "${{ github.event.issue.user.login }}" "Q1" "./workspace")
+          OUTPUT=$(python3 engine/evaluate.py "${{ github.event.issue.user.login }}" "${{ steps.parse.outputs.question_id }}" "./workspace")
           echo "Result: $OUTPUT"
 
-          # Basic parsing for the prototype update
-          if [[ "$OUTPUT" == SCORE_UPDATE* ]]; then
-            IFS=':' read -r PREFIX TEAM SCORE STATUS <<< "$OUTPUT"
-
-            # Update JSON via jq
-            jq ".\"$TEAM\".score = $SCORE | .\"$TEAM\".status = \"$STATUS\"" leaderboard.json > tmp.json && mv tmp.json leaderboard.json
-          else
+          LINE=$(echo "$OUTPUT" | grep '^SCORE_UPDATE_JSON:' || true)
+          if [[ -z "$LINE" ]]; then
             echo "Error: Grading system returned a fallback/invalid response."
             exit 1
           fi
 
-      - name: Commit Leaderboard
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update leaderboard"
-          file_pattern: 'leaderboard.json'
+          JSON="${LINE#SCORE_UPDATE_JSON:}"
+          echo "$JSON" | jq . > /dev/null   # fail loudly if evaluate.py emitted malformed JSON
+          echo "result_json=$JSON" >> "$GITHUB_OUTPUT"
 
-      - name: Close Issue
+      - name: Update Leaderboard
+        if: steps.lookup.outputs.valid == 'true'
+        env:
+          RESULT_JSON: ${{ steps.grade.outputs.result_json }}
+        run: |
+          TEAM=$(echo "$RESULT_JSON" | jq -r .team)
+          QID=$(echo "$RESULT_JSON" | jq -r .question_id)
+          SCORE=$(echo "$RESULT_JSON" | jq -r .score)
+          POINTS=$(echo "$RESULT_JSON" | jq -r .points)
+          STATUS=$(echo "$RESULT_JSON" | jq -r .status)
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Optimistic concurrency: no global lock, so re-fetch + reapply + retry on push rejection.
+          # Each retry replays this run's own (idempotent) update against the latest tree, so
+          # concurrent updates to *other* teams/questions are never clobbered.
+          for i in 1 2 3 4 5 6; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            jq --arg team "$TEAM" --arg qid "$QID" --argjson score "$SCORE" \
+               --argjson points "$POINTS" --arg status "$STATUS" '
+              .[$team].questions[$qid] = {"score": $score, "points": $points, "status": $status}
+              | .[$team].total = ([.[$team].questions[].score] | add)
+            ' leaderboard.json > tmp.json && mv tmp.json leaderboard.json
+
+            git add leaderboard.json
+            git commit -m "Update leaderboard: $TEAM $QID"
+
+            if git push origin main; then
+              echo "Push succeeded on attempt $i"
+              break
+            fi
+
+            if [[ "$i" == 6 ]]; then
+              echo "Failed to push leaderboard update after 6 attempts"
+              exit 1
+            fi
+
+            echo "Push rejected, retrying (attempt $i)..."
+            sleep $(( (RANDOM % 5) + 1 ))
+          done
+
+      - name: Comment - Grading Result
+        if: steps.lookup.outputs.valid == 'true'
         uses: actions/github-script@v7
+        env:
+          RESULT_JSON: ${{ steps.grade.outputs.result_json }}
+          QUESTION_TITLE: ${{ steps.lookup.outputs.title }}
         with:
           script: |
+            const result = JSON.parse(process.env.RESULT_JSON);
+            const emoji = result.status !== 'Active' ? '❌' : (result.score === result.points ? '✅' : '⚠️');
+            const body = [
+              `## Grading Result — ${process.env.QUESTION_TITLE}`,
+              ``,
+              `**Status:** ${emoji} ${result.status}`,
+              `**Score:** ${result.score} / ${result.points} points`,
+              `**Details:** ${result.reason}`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,

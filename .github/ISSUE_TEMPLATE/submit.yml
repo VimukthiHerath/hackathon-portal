@@ -6,7 +6,8 @@ body:
     attributes:
       label: Question Selection
       options:
-        - "Question 1: The Warmup"
+        - "Q1: Target Sum Matcher"
+        - "Q3: Double Trouble"
     validations:
       required: true
   - type: textarea

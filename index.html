@@ -4,124 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SLIIT Hackathon Live Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-slate-950 bg-grid text-slate-100 min-h-screen font-sans">
+
+    <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="bg-amber-500 text-slate-900 p-2 rounded-lg font-black text-xl tracking-wider shadow-lg shadow-amber-500/20">
                     SLIIT
                 </div>
-                <span class="font-bold text-lg text-slate-200">CODE CHALLENGE 2026</span>
+                <span class="font-display font-bold text-lg text-slate-200">CODE CHALLENGE 2026</span>
             </div>
             <div class="flex items-center space-x-2 text-xs bg-slate-800 py-1.5 px-3 rounded-full border border-slate-700">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-slate-400 font-medium">LIVE PARSING ENGINE</span>
+                <span class="text-slate-400 font-medium">LIVE GRADING ENGINE</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        
+    <section class="relative overflow-hidden">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="max-w-6xl mx-auto px-6 pt-20 pb-8 text-center relative">
+            <h1 class="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-100">
+                Algorithmic Hackathon <span class="text-amber-400">2026</span>
+            </h1>
+            <p class="mt-4 text-slate-400 max-w-xl mx-auto">
+                Solve the live questions below, submit a zip through a GitHub Issue, and watch
+                the leaderboard update automatically — no manual grading involved.
+            </p>
+            <div class="mt-8 flex justify-center gap-4 flex-wrap" id="stats-row"></div>
+        </div>
+    </section>
+
+    <main class="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+
         <div class="md:col-span-1 space-y-6">
-            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-md shadow-xl">
-                <span class="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">Active Task</span>
-                <h2 class="text-2xl font-black mt-3 text-slate-200">Q1: Target Sum Matcher</h2>
-                <p class="text-slate-400 text-sm mt-2 leading-relaxed">
-                    Given a line of space-separated numbers and a target integer sum on the next line, determine if any two distinct items combine to match the target. Print <code class="text-amber-300 font-mono">True</code> or <code class="text-amber-300 font-mono">False</code>.
-                </p>
-                
-                <div class="mt-6 pt-6 border-t border-slate-800">
-                    <a href="./Q1_Starter_Pack.zip" download class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-900 font-bold py-3 px-4 rounded-xl shadow-lg transition duration-200 group">
-                        <i class="fa-solid fa-cloud-arrow-down group-hover:animate-bounce"></i>
-                        <span>Download Starter Pack</span>
-                    </a>
-                    <p class="text-[11px] text-slate-500 text-center mt-2">Contains template execution scripts and mock environments.</p>
-                </div>
+            <div id="question-list" class="space-y-6">
+                <div class="skeleton-card"></div>
             </div>
 
-            <div class="bg-slate-800/20 border border-slate-800/60 rounded-2xl p-6 text-sm text-slate-400">
-                <h3 class="font-bold text-slate-300 mb-2 flex items-center"><i class="fa-solid fa-arrow-up-from-bracket mr-2 text-amber-500"></i>How to Submit:</h3>
+            <div class="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 text-sm text-slate-400 fade-in">
+                <h3 class="font-display font-bold text-slate-300 mb-2 flex items-center"><i class="fa-solid fa-arrow-up-from-bracket mr-2 text-amber-500"></i>How to Submit</h3>
                 <ol class="list-decimal list-inside space-y-2 text-xs">
-                    <li>Pack your workspace files into a standard <code class="text-slate-200">.zip</code>.</li>
-                    <li>Head directly to our public Issues portal.</li>
-                    <li>Open a submission ticket, attach your file, and track the evaluation telemetry live.</li>
+                    <li>Pack your solution file into a standard <code class="text-slate-200">.zip</code>.</li>
+                    <li>Open a new <a href="../../issues/new/choose" class="text-amber-400 hover:underline">submission issue</a> and pick your question from the dropdown.</li>
+                    <li>Attach your <code class="text-slate-200">.zip</code> and submit — grading and feedback happen automatically as a comment on your issue.</li>
                 </ol>
             </div>
         </div>
 
         <div class="md:col-span-2">
-            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl" id="board-container">
-                <div class="p-12 text-center text-slate-400" id="board">
-                    <i class="fa-solid fa-circle-notch animate-spin text-amber-500 text-2xl mb-3"></i>
-                    <p>Establishing datalink connection...</p>
-                </div>
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="font-display text-lg font-bold text-slate-300 flex items-center"><i class="fa-solid fa-ranking-star mr-2 text-amber-500"></i>Leaderboard</h2>
+                <span class="text-xs text-slate-500" id="last-updated"></span>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl" id="board-container">
+                <div class="skeleton-board"></div>
             </div>
         </div>
     </main>
 
-    <script>
-        var cacheBusterUrl = 'leaderboard.json?v=' + Date.now();
+    <footer class="border-t border-slate-800/60 py-6 text-center text-xs text-slate-600">
+        Built for the SLIIT Code Challenge &middot; grading runs entirely on GitHub Actions
+    </footer>
 
-        fetch(cacheBusterUrl)
-            .then(res => {
-                if (!res.ok) throw new Error('Data storage unavailable.');
-                return res.json();
-            })
-            .then(data => {
-                var sortedTeams = [];
-                for (var name in data) {
-                    if (data.hasOwnProperty(name)) {
-                        sortedTeams.push({ name: name, score: data[name].score, status: data[name].status || 'Active' });
-                    }
-                }
-                sortedTeams.sort((a, b) => b.score - a.score);
-
-                var html = '<div class="overflow-x-auto"><table class="w-full text-left border-collapse">';
-                html += '<thead><tr class="border-b border-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider bg-slate-800/50"><th class="py-4 px-6">Rank</th><th class="py-4 px-6">Team Profile</th><th class="py-4 px-6">Status</th><th class="py-4 px-6 text-right">Score</th></tr></thead>';
-                html += '<tbody class="divide-y divide-slate-800/60">';
-
-                sortedTeams.forEach((team, index) => {
-                    var rankBadge = `<span class="text-slate-500 font-mono">${index + 1}</span>`;
-                    if (index === 0 && team.score > 0) rankBadge = '🥇';
-                    if (index === 1 && team.score > 0) rankBadge = '🥈';
-                    if (index === 2 && team.score > 0) rankBadge = '🥉';
-
-                    var statusBadge = '<span class="px-2.5 py-1 text-xs font-semibold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">Active</span>';
-                    var rowStyle = 'class="hover:bg-slate-800/20 transition duration-150"';
-                    var nameDisplay = `<span class="font-bold text-slate-200 text-base">${team.name}</span>`;
-
-                    if (team.status.includes('Disqualified')) {
-                        statusBadge = '<span class="px-2.5 py-1 text-xs font-semibold bg-rose-500/10 text-rose-400 rounded-full border border-rose-500/20">Disqualified ⚠️</span>';
-                        rowStyle = 'class="bg-rose-950/10 opacity-60 line-through"';
-                        nameDisplay = `<span class="font-medium text-slate-500">${team.name}</span>`;
-                    } else if (team.status.includes('Failed')) {
-                        statusBadge = `<span class="px-2.5 py-1 text-xs font-semibold bg-amber-500/10 text-amber-400 rounded-full border border-amber-500/20">${team.status}</span>`;
-                    }
-
-                    html += `<tr ${rowStyle}>`;
-                    html += `<td class="py-4 px-6 w-16 text-center">${rankBadge}</td>`;
-                    html += `<td class="py-4 px-6">${nameDisplay}</td>`;
-                    html += `<td class="py-4 px-6">${statusBadge}</td>`;
-                    html += `<td class="py-4 px-6 text-right font-mono font-bold text-lg text-amber-400">${team.score} <span class="text-xs text-slate-500 font-normal">pts</span></td>`;
-                    html += '</tr>';
-                });
-
-                html += '</tbody></table></div>';
-                document.getElementById('board-container').innerHTML = html;
-            })
-            .catch(err => {
-                document.getElementById('board-container').innerHTML = `
-                    <div class="p-8 text-center text-rose-400">
-                        <i class="fa-solid fa-circle-exclamation text-3xl mb-2"></i>
-                        <p class="font-bold">Dashboard Connection Failure</p>
-                        <p class="text-xs text-slate-500 mt-1">${err.message}</p>
-                    </div>
-                `;
-            });
-    </script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/render.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>

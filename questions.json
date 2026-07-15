@@ -1,0 +1,16 @@
+[
+  {
+    "id": "Q1",
+    "title": "Target Sum Matcher",
+    "points": 100,
+    "unlocked": true,
+    "summary": "Given a list of integers and a target, decide if any two distinct items sum to it."
+  },
+  {
+    "id": "Q3",
+    "title": "Double Trouble",
+    "points": 50,
+    "unlocked": false,
+    "summary": "Read an integer and print double its value."
+  }
+]
