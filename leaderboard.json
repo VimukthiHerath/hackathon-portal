@@ -20,10 +20,15 @@
     }
   },
   "BetaForce": {
-    "total": 0,
+    "total": 100,
     "questions": {
       "Q1": {
         "score": 0,
+        "points": 100,
+        "status": "Active"
+      },
+      "Q2": {
+        "score": 100,
         "points": 100,
         "status": "Active"
       }
