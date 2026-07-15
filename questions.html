@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questions — Open Hack</title>
+  <meta name="description" content="Browse the live and upcoming Open Hack problems.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%23f2ecda'/%3E%3Cline x1='12' y1='8' x2='12' y2='20' stroke='%231b1712' stroke-width='2.5'/%3E%3Ccircle cx='12' cy='7' r='5' fill='%232f6b4a' stroke='%231b1712' stroke-width='1.5'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <line x1="12" y1="7" x2="12" y2="22" stroke="#1b1712" stroke-width="2"/>
+          <circle cx="12" cy="6" r="5" fill="#2f6b4a" stroke="#1b1712" stroke-width="1.5"/>
+        </svg>
+        <span class="brand-word">OPEN HACK</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="questions.html" aria-current="page">Questions</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="submit.html">How to Submit</a>
+      </nav>
+      <span class="live-pill"><span class="dot"></span>Grading live</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" style="border-bottom: none;">
+      <div class="container">
+        <p class="eyebrow">questions --list</p>
+        <div class="q-toolbar">
+          <h2>Problems</h2>
+          <div class="team-picker">
+            <label for="team-select">playing as</label>
+            <select id="team-select">
+              <option value="">— pick your team —</option>
+            </select>
+          </div>
+        </div>
+        <p style="max-width: 34rem;">Locked problems stay listed so you know what's coming — they open live as the admin releases them.</p>
+
+        <div class="q-list" id="question-list" style="margin-top: 2rem;">
+          <div class="skeleton skeleton-row"></div>
+          <div class="skeleton skeleton-row"></div>
+          <div class="skeleton skeleton-row"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">Open Hack &middot; problems open live, graded automatically</div>
+  </footer>
+
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/questions.js"></script>
+</body>
+</html>

@@ -9,16 +9,6 @@
       }
     }
   },
-  "RivalTeam": {
-    "total": 0,
-    "questions": {
-      "Q1": {
-        "score": 0,
-        "points": 100,
-        "status": "Active"
-      }
-    }
-  },
   "BetaForce": {
     "total": 100,
     "questions": {
