@@ -10,7 +10,7 @@
     "id": "Q2",
     "title": "Bubble Sort",
     "points": 100,
-    "unlocked": false,
+    "unlocked": true,
     "summary": "Sort a list of integers in ascending order."
   },
   {
