@@ -332,6 +332,15 @@ string match.
   account, so this system trusts "one submission per registered username,"
   not strong identity verification. Fine for a low-stakes/educational
   event; not meant to stop a determined cheater with multiple accounts.
+- **Never interpolate issue-body content directly into a shell `run:`
+  step.** `grade.yml` extracts the submission zip URL from the issue body
+  with a regex — pass values like that through `env:` and reference them
+  as `$VAR`, never as a raw `${{ ... }}` inside the script text. Doing the
+  latter lets GitHub substitute attacker-controlled text straight into the
+  shell command before it's parsed, which is a real script-injection
+  vector on a workflow anyone can trigger by opening an issue — and this
+  workflow's job later authenticates as `PRIVATE_REPO_TOKEN` in the same
+  run, so the blast radius includes your private answer key.
 
 ---
 

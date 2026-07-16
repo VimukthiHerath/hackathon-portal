@@ -32,7 +32,7 @@ jobs:
             if (!idMatch) core.setFailed(`Could not parse a question id out of "${selection}". Expected the option to start with "Q<id>:".`);
             core.setOutput("question_id", idMatch[1]);
 
-            const zipMatch = body.match(/https:\/\/github\.com\/[^\s)]+\.zip/);
+            const zipMatch = body.match(/https:\/\/github\.com\/[^\s)"'`<>;&|$]+\.zip/);
             if (!zipMatch) core.setFailed("No ZIP attachment URL found in the issue body.");
             core.setOutput("zip_url", zipMatch ? zipMatch[0] : "");
 
@@ -68,8 +68,10 @@ jobs:
 
       - name: Download & Extract Submission
         if: steps.lookup.outputs.valid == 'true'
+        env:
+          ZIP_URL: ${{ steps.parse.outputs.zip_url }}
         run: |
-          curl -L -o submission.zip "${{ steps.parse.outputs.zip_url }}"
+          curl -L -o submission.zip "$ZIP_URL"
           mkdir workspace
           unzip -o submission.zip -d workspace/
 
