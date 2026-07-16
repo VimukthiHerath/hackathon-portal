@@ -17,7 +17,7 @@
     "id": "Q3",
     "title": "Double Trouble",
     "points": 50,
-    "unlocked": false,
+    "unlocked": true,
     "summary": "Read an integer and print double its value."
   },
   {
