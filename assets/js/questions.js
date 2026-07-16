@@ -1,6 +1,8 @@
 (() => {
+  const REFRESH_MS = 30000;
   let allQuestions = [];
   let allLeaderboard = {};
+  let teamPickerWired = false;
 
   function isSolvedByTeam(qid, team) {
     if (!team || !allLeaderboard[team]) return false;
@@ -64,18 +66,22 @@
   function populateTeamPicker() {
     const select = document.getElementById('team-select');
     const names = teamNames(allLeaderboard);
-    names.forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      select.appendChild(opt);
-    });
+
+    // Rebuild rather than append — this runs on every auto-refresh, and
+    // appending would duplicate every option on each pass.
+    select.innerHTML = '<option value="">— pick your team —</option>'
+      + names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+
     const saved = getMyTeam();
     if (saved && names.includes(saved)) select.value = saved;
-    select.addEventListener('change', () => {
-      setMyTeam(select.value);
-      renderList();
-    });
+
+    if (!teamPickerWired) {
+      select.addEventListener('change', () => {
+        setMyTeam(select.value);
+        renderList();
+      });
+      teamPickerWired = true;
+    }
   }
 
   function renderError(message) {
@@ -96,4 +102,5 @@
   }
 
   load();
+  setInterval(load, REFRESH_MS);
 })();

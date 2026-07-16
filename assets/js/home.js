@@ -1,4 +1,5 @@
 (() => {
+  const REFRESH_MS = 30000;
   let countdownTimer = null;
 
   function renderTerminal(questions, leaderboard) {
@@ -24,6 +25,7 @@
       const row = document.getElementById('countdown-row');
       const val = document.getElementById('countdown-val');
       row.hidden = false;
+      if (countdownTimer) clearInterval(countdownTimer);
       const tick = () => {
         const remaining = new Date(CONTEST_WINDOW.end).getTime() - Date.now();
         const formatted = formatCountdown(remaining);
@@ -52,4 +54,5 @@
   }
 
   load();
+  setInterval(load, REFRESH_MS);
 })();

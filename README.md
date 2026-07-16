@@ -293,25 +293,27 @@ the submission dropdown, and commits everything together in
 - **Single-file submissions** — the grader looks for one file matching
   `submission_filename` (in any of the supported languages) anywhere in
   the zip; multi-file projects aren't supported out of the box.
-- **Java's filename rule applies** — a `solution.java` submission must
-  declare `public class solution` (matching the filename exactly), same
-  as any Java program. Worth a line in your problem statements.
-- **Exact stdout matching** — scoring is `your stdout.strip() ==
-  expected_output.strip()`, so problems needing fuzzy/tolerant matching
-  (e.g. floating point) need a custom comparator in `evaluate.py`.
 - **Time limit only, no memory limit** — `time_limit_seconds` caps
   runtime per test case, but nothing caps memory use, so a submission
   that allocates unbounded memory can still exhaust the runner.
-- **10-minute job ceiling** — `grade.yml` sets `timeout-minutes: 10` for
-  the whole grading job (compile + all test cases combined); raise it if
-  you have many/slow test cases or a slow-compiling language.
-- **No real-time push** — the site polls the JSON files on page load, not
-  via websockets, so there's a few seconds of "check back" rather than
-  instant updates.
+- **20-minute job ceiling** — `grade.yml` sets `timeout-minutes: 20` for
+  the whole grading job (compile + all test cases combined); raise it
+  further if you have many/slow test cases or a slow-compiling language.
+- **Polling, not push** — the site re-fetches `questions.json` and
+  `leaderboard.json` every 30 seconds on every page (plus once on load),
+  so updates land within ~30s without a manual refresh — not instant,
+  but no server needed either.
 - **Username-based identity, not verified accounts** — anyone can create
   a GitHub account, so "one submission per registered username" isn't
   proof against a determined cheater running multiple accounts (see
   Security notes).
+
+Already fixed and no longer limitations, if you're comparing against an
+older version of this doc: Java submissions no longer need their public
+class name to match the filename (the grader reads the real class name
+out of the source and compiles accordingly); output comparison now
+tolerates small floating-point differences instead of requiring an exact
+string match.
 
 ---
 
