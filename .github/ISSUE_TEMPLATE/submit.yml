@@ -9,6 +9,7 @@ body:
         - "Q1: Target Sum Matcher"
         - "Q2: Bubble Sort"
         - "Q3: Double Trouble"
+        - "Q4: Insertion Sort"
     validations:
       required: true
   - type: textarea

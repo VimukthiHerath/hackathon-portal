@@ -24,7 +24,7 @@
     "id": "Q4",
     "title": "Insertion Sort",
     "points": 100,
-    "unlocked": false,
+    "unlocked": true,
     "summary": "Sort a list of integers in ascending order using insertion sort."
   }
 ]
