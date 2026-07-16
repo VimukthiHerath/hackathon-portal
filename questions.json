@@ -19,5 +19,12 @@
     "points": 50,
     "unlocked": false,
     "summary": "Read an integer and print double its value."
+  },
+  {
+    "id": "Q4",
+    "title": "Insertion Sort",
+    "points": 100,
+    "unlocked": false,
+    "summary": "Sort a list of integers in ascending order using insertion sort."
   }
 ]
