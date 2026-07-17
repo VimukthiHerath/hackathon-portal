@@ -12,9 +12,13 @@ provision, no hosting bill.
 - **Submission form** → a GitHub Issue Form
 - **Storage for problems/answers** → a second, private GitHub repo
 
+**[Live demo →](https://vimukthiherath.github.io/hackathon-portal/)**
+
 If you're a participant looking to submit a solution, see
-**[the live submission guide](https://YOUR-USERNAME.github.io/hackathon-portal/submit.html)**
-on the portal itself — this README is for whoever is **running** an event.
+**the live submission guide** (`/submit.html`) on the portal itself —
+this README is for whoever is **running** an event. If you're setting up
+your own event from this template, replace that demo link (and the
+`YOUR-USERNAME` placeholders further down) with your own fork's URL.
 
 ---
 
@@ -29,6 +33,7 @@ on the portal itself — this README is for whoever is **running** an event.
 - [Limitations](#limitations)
 - [Security notes](#security-notes)
 - [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
@@ -195,37 +200,37 @@ it — copying it into `hackathon-portal` *is* the unlock.
 
 ```
 cd hackathon-tests
-python3 new_question.py --id Q5 --title "Two Sum Variant" --points 100 --summary "One-line teaser shown on the portal"
+python3 new_question.py --id Q11 --title "Two Sum Variant" --points 100 --summary "One-line teaser shown on the portal"
 ```
 
-This creates the `Q5/private/` and `Q5/public/` skeleton (with `TODO`
-placeholders) and registers Q5 in the public `questions.json` as
+This creates the `Q11/private/` and `Q11/public/` skeleton (with `TODO`
+placeholders) and registers Q11 in the public `questions.json` as
 `unlocked: false` — safe to do immediately, since only the title/points/
 summary go public, not the actual problem.
 
 Then fill in the placeholders by hand: real test cases in
-`Q5/private/tests/*/`, the real problem statement in
-`Q5/public/README.md`, and starter code in `Q5/public/starter/`.
+`Q11/private/tests/*/`, the real problem statement in
+`Q11/public/README.md`, and starter code in `Q11/public/starter/`.
 
 ### Option B — do it by hand
 
 If your test cases come from somewhere else (e.g. a lecturer's existing
 problem set), just create the same files yourself:
 
-1. `hackathon-tests/Q5/private/config.json`:
+1. `hackathon-tests/Q11/private/config.json`:
    ```json
    { "title": "Two Sum Variant", "points": 100, "time_limit_seconds": 2, "submission_filename": "solution.py" }
    ```
-2. `hackathon-tests/Q5/private/tests/1/input.txt` and `.../output.txt` — one
+2. `hackathon-tests/Q11/private/tests/1/input.txt` and `.../output.txt` — one
    folder per test case.
-3. `hackathon-tests/Q5/public/README.md` — the problem statement.
-4. `hackathon-tests/Q5/public/starter/solution.py` — starter code.
+3. `hackathon-tests/Q11/public/README.md` — the problem statement.
+4. `hackathon-tests/Q11/public/starter/solution.py` — starter code.
 5. Register it (still locked) in `hackathon-portal/questions.json`:
    ```json
-   { "id": "Q5", "title": "Two Sum Variant", "points": 100, "unlocked": false, "summary": "One-line teaser" }
+   { "id": "Q11", "title": "Two Sum Variant", "points": 100, "unlocked": false, "summary": "One-line teaser" }
    ```
 
-At this point Q5 shows on the site as "Locked" with nothing solvable
+At this point Q11 shows on the site as "Locked" with nothing solvable
 leaked — everything real is still sitting in the private repo.
 
 ---
@@ -243,26 +248,26 @@ directly (not just the website) can already see them, unlock flag or not.
 
 ```
 cd hackathon-tests
-python3 release_question.py --id Q5
+python3 release_question.py --id Q11
 ```
 
-This does all of it atomically: copies `Q5/public/` into
-`hackathon-portal/questions/Q5/`, builds `Q5_Starter_Pack.zip`, flips
-`unlocked` to `true` in `questions.json`, adds the `"Q5: ..."` option to
+This does all of it atomically: copies `Q11/public/` into
+`hackathon-portal/questions/Q11/`, builds `Q11_Starter_Pack.zip`, flips
+`unlocked` to `true` in `questions.json`, adds the `"Q11: ..."` option to
 the submission dropdown, and commits everything together in
 `hackathon-portal` — **without pushing**. Review the commit with
 `git show`, then `git push` yourself when you actually want it live.
 
 ### Option B — by hand (e.g. entirely through github.com)
 
-1. Copy `hackathon-tests/Q5/public/README.md` → new file
-   `hackathon-portal/questions/Q5/README.md`.
-2. Copy `hackathon-tests/Q5/public/starter/solution.py` → new file
-   `hackathon-portal/questions/Q5/starter/solution.py`.
-3. Zip the contents of `Q5/public/starter/` into `Q5_Starter_Pack.zip` and
+1. Copy `hackathon-tests/Q11/public/README.md` → new file
+   `hackathon-portal/questions/Q11/README.md`.
+2. Copy `hackathon-tests/Q11/public/starter/solution.py` → new file
+   `hackathon-portal/questions/Q11/starter/solution.py`.
+3. Zip the contents of `Q11/public/starter/` into `Q11_Starter_Pack.zip` and
    upload it to the root of `hackathon-portal`.
-4. In `questions.json`, flip Q5's `"unlocked": false` to `true`.
-5. In `.github/ISSUE_TEMPLATE/submit.yml`, add `- "Q5: Two Sum Variant"` to
+4. In `questions.json`, flip Q11's `"unlocked": false` to `true`.
+5. In `.github/ISSUE_TEMPLATE/submit.yml`, add `- "Q11: Two Sum Variant"` to
    the dropdown options.
 6. Commit **all of the above together** (one commit, one push) — never
    push the files first and the unlock flag later, or vice versa.
@@ -279,7 +284,8 @@ the submission dropdown, and commits everything together in
 - **Result states** a team can see on their issue:
   - ✅ `Active`, full score — passed every test case
   - ⚠️ `Active`, partial score — passed some test cases
-  - ❌ `Failed` — no `solution.py` found in the zip, or 0 tests passed
+  - ❌ `Failed` — no matching solution file found in the zip, a
+    compile error, or 0 tests passed
   - ❌ `Disqualified` — the anti-cheat check in `evaluate.py` flagged the
     submission
 - **Re-submissions**: participants can open a new issue for the same
@@ -357,7 +363,16 @@ string match.
   `unlocked` flag in `questions.json` is `false`. Release it first.
 - **"Unregistered GitHub user"** — the submitter's username isn't in
   `hackathon-tests/team_mapping.json` (must be lowercase).
-- **"No solution.py found in submission"** — the zip didn't contain a file
-  matching the question's `submission_filename`, at any nesting depth.
+- **"No `<name>`.(py|js|cpp|java) found in submission"** — the zip didn't
+  contain a file matching the question's `submission_filename` (in any
+  supported language), at any nesting depth.
+- **"Compilation error: ..."** — a C++ or Java submission failed to
+  compile; the message includes the compiler's own error output.
 - **Checkout Private Engine step fails** — `PRIVATE_REPO_TOKEN` is missing,
   expired, or doesn't have access to `hackathon-tests`.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE). Fork it, rebrand it, run your own event.
