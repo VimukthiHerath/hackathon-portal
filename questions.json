@@ -26,5 +26,47 @@
     "points": 100,
     "unlocked": true,
     "summary": "Sort a list of integers in ascending order using insertion sort."
+  },
+  {
+    "id": "Q5",
+    "title": "Longest Increasing Subsequence",
+    "points": 150,
+    "unlocked": false,
+    "summary": "Find the length of the longest strictly increasing subsequence in an array of integers."
+  },
+  {
+    "id": "Q6",
+    "title": "Valid Parentheses",
+    "points": 100,
+    "unlocked": false,
+    "summary": "Check whether a string of brackets is properly balanced."
+  },
+  {
+    "id": "Q7",
+    "title": "Binary Search",
+    "points": 100,
+    "unlocked": false,
+    "summary": "Find the index of a target value in a sorted array using binary search."
+  },
+  {
+    "id": "Q8",
+    "title": "Reverse a Linked List",
+    "points": 100,
+    "unlocked": false,
+    "summary": "Build a singly linked list and print its values in reversed order."
+  },
+  {
+    "id": "Q9",
+    "title": "GCD via Recursion",
+    "points": 75,
+    "unlocked": false,
+    "summary": "Compute the greatest common divisor of two integers using recursion."
+  },
+  {
+    "id": "Q10",
+    "title": "First Non-Repeating Character",
+    "points": 100,
+    "unlocked": false,
+    "summary": "Find the first character in a string that doesn't repeat."
   }
 ]

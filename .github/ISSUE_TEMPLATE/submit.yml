@@ -10,6 +10,12 @@ body:
         - "Q2: Bubble Sort"
         - "Q3: Double Trouble"
         - "Q4: Insertion Sort"
+        - "Q5: Longest Increasing Subsequence"
+        - "Q6: Valid Parentheses"
+        - "Q7: Binary Search"
+        - "Q8: Reverse a Linked List"
+        - "Q9: GCD via Recursion"
+        - "Q10: First Non-Repeating Character"
     validations:
       required: true
   - type: textarea
