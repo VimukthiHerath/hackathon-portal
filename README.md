@@ -346,9 +346,13 @@ string match.
 
 ## Troubleshooting
 
-- **"Failed to push leaderboard update after 6 attempts"** — usually means
-  something else is repeatedly pushing to `main` at the same time, or the
-  workflow's write permissions aren't enabled (see step 3 above).
+- **"Failed to push leaderboard update after 15 attempts"** — usually means
+  a lot of teams submitted in the same few seconds (e.g. right at a
+  deadline) and this run kept losing the race to commit
+  `leaderboard.json`. The submission itself wasn't lost — the participant
+  just needs to open a new submission issue and it'll retry cleanly. Could
+  also mean the workflow's write permissions aren't enabled (see step 3
+  above).
 - **Grader comments "Sorry, Q# isn't currently open"** — the question's
   `unlocked` flag in `questions.json` is `false`. Release it first.
 - **"Unregistered GitHub user"** — the submitter's username isn't in

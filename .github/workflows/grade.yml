@@ -117,7 +117,11 @@ jobs:
           # Optimistic concurrency: no global lock, so re-fetch + reapply + retry on push rejection.
           # Each retry replays this run's own (idempotent) update against the latest tree, so
           # concurrent updates to *other* teams/questions are never clobbered.
-          for i in 1 2 3 4 5 6; do
+          # Backoff widens with each attempt (i*2 range) to spread out contention during
+          # bursts (e.g. many teams submitting right at a deadline), rather than having
+          # everyone retry on the same fixed 1-5s window and re-collide.
+          MAX_ATTEMPTS=15
+          for i in $(seq 1 "$MAX_ATTEMPTS"); do
             git fetch origin main
             git reset --hard origin/main
 
@@ -135,13 +139,13 @@ jobs:
               break
             fi
 
-            if [[ "$i" == 6 ]]; then
-              echo "Failed to push leaderboard update after 6 attempts"
+            if [[ "$i" == "$MAX_ATTEMPTS" ]]; then
+              echo "Failed to push leaderboard update after $MAX_ATTEMPTS attempts"
               exit 1
             fi
 
             echo "Push rejected, retrying (attempt $i)..."
-            sleep $(( (RANDOM % 5) + 1 ))
+            sleep $(( (RANDOM % (i * 2)) + 1 ))
           done
 
       - name: Comment - Grading Result
